@@ -1,0 +1,256 @@
+<div
+  class="hero__wrapper bg-dark text-white"
+  style="height: {{ section.settings.hero_height }}vh;"
+  x-data="hero"
+>
+  <div
+    class="container hero__inner-wrapper"
+    x-ref="innerWrapper"
+  >
+    <h1
+      class="hero__heading-text display-1"
+      x-ref="headingText"
+    >
+      {% assign heading_word = section.settings.heading_text | split: ' ' %}
+      {% for word in heading_word %}
+
+        <span class="hero__heading-char-wrapper">
+          {% assign wordChar = word | split: '' %}
+          {% for char in wordChar %}
+
+            <span
+              id="char"
+              class="hero__heading-text-char text-white"
+            >
+              {{ char }}
+            </span>
+
+          {% endfor %}
+        </span>
+
+      {% endfor %}
+    </h1>
+
+    <h5
+      class="hero__subheading text-white"
+      x-ref="subheading"
+    >
+      {{ section.settings.subheading_text }}
+    </h5>
+
+    <a
+      class="hero__button btn btn-secondary btn-lg"
+      href="{{ section.settings.button_url }}"
+      role="button"
+      x-ref="button"
+      @mouseEnter="showImageShowcase"
+      @mouseLeave="hideImageShowcase"
+    >
+      {{ section.settings.button_text }}
+    </a>
+  </div>
+
+  <div
+    class="hero__dim-overlay bg-dark"
+    x-ref="dimOverlay"
+  >
+  </div>
+
+
+  <div
+    class="hero__image-showcase-wrapper"
+    x-ref="imageShowcaseWrapper"
+  >
+    <img
+      class="hero__image-showcase shadow-md rounded"
+      src="{{ section.settings.background_image_1 | img_url: 'master' }}"
+      draggable="false"
+      style="transform: translateY(110%);"
+    />
+    <img
+      class="hero__image-showcase shadow-md rounded"
+      src="{{ section.settings.background_image_2 | img_url: 'master' }}"
+      draggable="false"
+      style="transform: translateY(110%);"
+    />
+    <img
+      class="hero__image-showcase shadow-md rounded"
+      src="{{ section.settings.background_image_3 | img_url: 'master' }}"
+      draggable="false"
+      style="transform: translateY(110%);"
+    />
+  </div>
+</div>
+
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("hero", () => ({
+    waypoint: null,
+    init() {
+      this.waypoint = new Waypoint({
+        element: this.$el,
+        offset: "50%",
+        handler: this.introAnimation.bind(this)
+      })
+    },
+    introAnimation() {
+      this.waypoint.destroy()
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.headingText.querySelectorAll("#char"),
+        filter: "blur(0px)",
+        opacity: 1,
+        delay: anime.stagger(250, {start: 100}),
+      }).add({
+        targets: this.$refs.subheading,
+        filter: "blur(0px)",
+        opacity: 1,
+      }).add({
+        targets: this.$refs.button,
+        filter: "blur(0px)",
+        opacity: 1,
+      }).add({
+        targets: this.$refs.innerWrapper,
+        filter: "drop-shadow(5px 5px 5px rgba(0,0,0,0.25))",
+        duration: 300,
+      }, "-=100")
+    },
+    showImageShowcase() {
+      anime.remove(this.$refs.imageShowcaseWrapper.children)
+
+      anime({
+        targets: this.$refs.button,
+        scale: 1.1,
+        easing: "easeInOutQuart",
+        duration: 750
+      })
+
+      anime({
+        targets: this.$refs.dimOverlay,
+        opacity: 0.25,
+        easing: "easeInOutQuart",
+        duration: 1000
+      })
+
+      anime({
+        targets: this.$refs.imageShowcaseWrapper.children,
+        translateY: "0%",
+        delay: anime.stagger(250),
+        easing: "easeInOutQuart",
+        duration: 2000,
+      })
+    },
+    hideImageShowcase() {
+      anime.remove(this.$refs.imageShowcaseWrapper.children)
+
+      anime({
+        targets: this.$refs.button,
+        scale: 1,
+        easing: "easeInOutQuart",
+      })
+
+      anime({
+        targets: this.$refs.dimOverlay,
+        opacity: 0,
+        easing: "easeInOutQuart",
+        duration: 1000
+      })
+
+      anime({
+        targets: this.$refs.imageShowcaseWrapper.children,
+        translateY: "110%",
+        delay: anime.stagger(100),
+        duration: 1000,
+        easing: "easeInOutQuart",
+      })
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Headings",
+      "info": "Put something here that will grab the users attention and interest."
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "Welcome Visiter!"
+    },
+    {
+      "type": "text",
+      "id": "subheading_text",
+      "label": "Subheading Text",
+      "default": "We hope you enjoy your stay at Baka Town."
+    },
+    {
+      "type": "header",
+      "content": "Button",
+      "info": "Best used to link to something mentioned in the above headings."
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Background Images",
+      "info": "'Background images' are images that appears when a user hovers over the button (will not show on small screen sizes)."
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_1",
+      "label": "Background Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_2",
+      "label": "Background Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_3",
+      "label": "Background Image 3"
+    },
+    {
+      "type": "header",
+      "content": "Other"
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "label": "Hero Height",
+      "info": "Select the amount of view height you want the header to populate.",
+      "unit": "vh",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "default": 90
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
+}
+{% endschema %}
