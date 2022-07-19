@@ -2,9 +2,13 @@
   "sections": {
     "hero": {
       "type": "hero"
+    },
+    "call_to_action": {
+      "type": "call-to-action"
     }
   },
   "order": [
-    "hero"
+    "hero",
+    "call_to_action"
   ]
 }

@@ -1,0 +1,300 @@
+<div
+  class="container call-to-action__wrapper"
+  x-data="callToAction"
+>
+  <div class="call-to-action__info-wrapper">
+    <div
+      class="call-to-action__details-wrapper"
+      x-ref="details"
+    >
+      <div>
+        <h1 class="display-4">
+          {{ section.settings.heading_text }}
+        </h1>
+    
+        <div>
+          {{ section.settings.description }}
+        </div>
+      </div>
+  
+      <a
+        class="btn btn-dark btn-lg call-to-action__details-button"
+        href="{{ section.settings.button_url }}"
+        x-ref="button"
+        @mouseEnter="handleButtonMouseEnter"
+        @mouseLeave="handleButtonMouseLeave"
+      >
+        {{ section.settings.button_text }}
+      </a>
+    </div>
+
+    <div
+      class="call-to-action__image-showcase border-snake shadow bg-light"
+      x-ref="imageShowcase"
+    >
+      <div class="border-snake__inner">
+        <figure
+          class="call-to-action__image-wrapper rounded"
+        >
+          <img
+            class="call-to-action__image"
+            draggable="false"
+            x-ref="imageShowcaseImage"
+          />
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="call-to-action__gallery-wrapper"
+    x-ref="gallery"
+  >
+    <figure
+      class="call-to-action__image-wrapper rounded"
+      style="grid-row: span 3; grid-column: span 1;"
+      @mouseEnter="showImageShowcase(`{{ section.settings.image_1 | img_url: 'master' }}`)"
+      @mouseLeave="hideImageShowcase"
+    >
+      <img
+        class="call-to-action__image"
+        src="{{ section.settings.image_1 | img_url: 'grande' }}"
+        draggable="false"
+      />
+    </figure>
+
+    <figure
+      class="call-to-action__image-wrapper rounded"
+      style="grid-row: span 4; grid-column: span 1;"
+      @mouseEnter="showImageShowcase(`{{ section.settings.image_2 | img_url: 'master' }}`)"
+      @mouseLeave="hideImageShowcase"
+    >
+      <img
+        class="call-to-action__image"
+        src="{{ section.settings.image_2 | img_url: 'grande' }}"
+        draggable="false"
+      />
+    </figure>
+
+    <figure
+      class="call-to-action__image-wrapper rounded"
+      style="grid-row: span 4; grid-column: span 1;"
+      @mouseEnter="showImageShowcase(`{{ section.settings.image_3 | img_url: 'master' }}`)"
+      @mouseLeave="hideImageShowcase"
+    >
+      <img
+        class="call-to-action__image"
+        src="{{ section.settings.image_3 | img_url: 'grande' }}"
+        draggable="false"
+      />
+    </figure>
+
+    <figure
+      class="call-to-action__image-wrapper rounded"
+      style="grid-row: span 3; grid-column: span 1;"
+      @mouseEnter="showImageShowcase(`{{ section.settings.image_4 | img_url: 'master' }}`)"
+      @mouseLeave="hideImageShowcase"
+    >
+      <img
+        class="call-to-action__image"
+        src="{{ section.settings.image_4 | img_url: 'grande' }}"
+        draggable="false"
+      />
+    </figure>
+  </div>
+</div>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("callToAction", () => ({
+    waypoint: null,
+    init() {
+      this.waypoint = new Waypoint({
+        element: this.$el,
+        offset: "50%",
+        handler: this.introAnimation.bind(this)
+      })
+    },
+    introAnimation() {
+      this.waypoint.destroy()
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.details.children,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        duration: 1500,
+        delay: anime.stagger(250),
+      }).add({
+        targets: this.$refs.gallery.children,
+        opacity: [0, 1],
+        scale: [0.5, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        delay: anime.stagger(250),
+      }, "-=700")
+    },
+    handleButtonMouseEnter() {
+      anime({
+        targets: this.$refs.button,
+        scale: 1.1,
+        easing: "easeInOutQuart",
+      })
+
+      anime({
+        targets: this.$refs.gallery.children,
+        scale: [1, 0.95],
+        delay: anime.stagger(500),
+        easing: "easeInOutQuart",
+        loop: true,
+        direction: "alternate"
+      })
+    },
+    handleButtonMouseLeave() {
+      anime.remove(this.$refs.gallery.children)
+
+      anime({
+        targets: this.$refs.button,
+        scale: 1,
+        easing: "easeInOutQuart",
+      })
+
+      anime({
+        targets: this.$refs.gallery.children,
+        scale: 1,
+        delay: anime.stagger(500),
+        easing: "easeInOutQuart",
+      })
+    },
+    showImageShowcase(imageSrc) {
+      anime.remove(this.$refs.imageShowcase)
+      anime.remove(this.$refs.details.children)
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      if (anime.get(this.$refs.imageShowcase, "opacity") !== "0") {
+        tl.add({
+          targets: this.$refs.imageShowcase,
+          opacity: 0,
+          scale: 0.5,
+          filter: "blur(5px)",
+          duration: 1000,
+          complete: () => this.$refs.imageShowcaseImage.src = imageSrc
+        }).add({
+          targets: this.$refs.imageShowcase,
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 1000,
+        })
+      } else {
+        tl.add({
+          targets: this.$refs.details.children,
+          opacity: 0,
+          filter: "blur(5px)",
+          duration: 1500,
+          delay: anime.stagger(250),
+        }).add({
+          targets: this.$refs.imageShowcase,
+          opacity: 1,
+          scale: 1,
+          filter: "blur(0px)",
+          duration: 1500,
+          begin: () => this.$refs.imageShowcaseImage.src = imageSrc
+        }, "-=250")
+      }
+    },
+    hideImageShowcase() {
+      anime.remove(this.$refs.imageShowcase)
+      anime.remove(this.$refs.details.children)
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.imageShowcase,
+        opacity: 0,
+        scale: 0.75,
+        filter: "blur(0px)",
+        duration: 1500,
+      }).add({
+        targets: this.$refs.details.children,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 1500,
+        delay: anime.stagger(250)
+      }, "-=250")
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Call to Action",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Info Options"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "Wide Range of Products"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut sunt, atque in obcaecati quidem voluptates unde, debitis porro eius recusandae culpa explicabo dolorem cupiditate alias rem blanditiis voluptatem totam dolore. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia tempora commodi quibusdam vel natus tempore nobis perspiciatis repellat perferendis, autem dolores earum nesciunt. Repellendus blanditiis animi unde rerum voluptas itaque.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "View Now"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "header",
+      "content": "Gallery Options"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image 4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Call to Action"
+    }
+  ]
+}
+{% endschema %}
