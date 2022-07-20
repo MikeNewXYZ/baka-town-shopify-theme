@@ -1,0 +1,184 @@
+{% if section.settings.collection != blank %}
+  <div
+  x-data="featuredCollection"
+  style="padding: 2rem"
+  x-ref="wrapper"
+  >
+    <div
+      class="container"
+      style="padding: 0rem;"
+      x-ref="innerWrapper"
+    >
+      <div
+        class="featured-collection__content-wrapper border-snake__inner bg-white"
+        style="position: relative; inset: 0;"
+        x-ref="content"
+      >
+        <a
+          class="featured-collection__heading display-2"
+          href="{{ section.settings.collection.url }}"
+          style="opacity: 0;"
+          x-ref="heading"
+          @mouseEnter="handleHeadingMouseEnter"
+          @mouseLeave="handleHeadingMouseLeave"
+        >
+          {{ section.settings.collection.title }}
+        </a>
+
+        <div
+          class="featured-collection__description"
+          style="opacity: 0;"
+          x-ref="description"
+        >
+          {{ section.settings.collection.description }}
+        </div>
+
+        <div
+          class="featured-collection__gallery"
+          x-ref="gallery"
+        >
+          {% for product in section.settings.collection.products %}
+            {% if forloop.index0 <= 4 %}
+            {% assign image_grid_areas = 'a, b, c, d, e' | split: ',' %}
+              <a
+                class="featured-collection__image-wrapper rounded"
+                style="grid-area: {{ image_grid_areas[forloop.index0] }}; opacity: 0;"
+                data-image="{{ image_grid_areas[forloop.index0] | replace: ' ', '' }}"
+                href="{{ product.url }}"
+              >
+                <aside class="featured-collection__product-details text-light">
+                  {{ product.title }}
+                </aside>
+                <img
+                  class="featured-collection__image"
+                  src="{{ product.featured_image | img_url: 'master' }}"
+                  draggable="false"
+                />
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div style="text-align: center;">
+    <h4>{{ section.id }}</h4>
+    <p>A collection needs to be selected.</p>
+  </div>
+{% endif %}
+
+
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("featuredCollection", () => ({
+    waypoint: null,
+    init() {
+      this.waypoint = new Waypoint({
+        element: this.$el,
+        offset: "50%",
+        handler: this.introAnimation.bind(this)
+      })
+    },
+    introAnimation() {
+      this.waypoint.destroy()
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.heading,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"]
+      }).add({
+        targets: this.$refs.description,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"]
+      }, "-=400").add({
+        targets: this.$refs.gallery.children,
+        opacity: [0, 1],
+        scale: [0.5, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        delay: anime.stagger(100)
+      }, "-=400")
+
+    },
+    handleHeadingMouseEnter() {
+      anime.remove(this.$refs.wrapper)
+      anime.remove(this.$refs.innerWrapper)
+      anime.remove(this.$refs.content)
+
+      anime({
+        targets: [this.$refs.innerWrapper, this.$refs.content],
+        padding: "0.5rem",
+        easing: "easeInOutQuart",
+        duration: 750,
+        begin: () => {
+          this.$refs.innerWrapper.classList.add("border-snake", "bg-light")
+        },
+        change: ({progress}) => {
+          this.$refs.innerWrapper.style.boxShadow = `
+            0px 5px 20px rgba(0,0,0, ${progress / 1000})
+          `
+        }
+      })
+
+      anime({
+        targets: this.$refs.wrapper,
+        padding: "1rem",
+        easing: "easeInOutQuart",
+        duration: 750
+      })
+    },
+    handleHeadingMouseLeave() {
+      anime.remove(this.$refs.wrapper)
+      anime.remove(this.$refs.innerWrapper)
+      anime.remove(this.$refs.content)
+
+      anime({
+        targets: [this.$refs.innerWrapper, this.$refs.content],
+        padding: "0rem",
+        easing: "easeInOutQuart",
+        duration: 750,
+        complete: () => {
+          this.$refs.innerWrapper.classList.remove("border-snake", "bg-light")
+        },
+        change: ({progress}) => {
+          this.$refs.innerWrapper.style.boxShadow = `
+            0px 5px 20px rgba(0,0,0, ${(100 - progress) / 1000})
+          `
+        }
+      })
+
+      anime({
+        targets: this.$refs.wrapper,
+        padding: "2rem",
+        easing: "easeInOutQuart",
+        duration: 750
+      })
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Collection needs at least 5 products with images for this section to work."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection"
+    }
+  ]
+}
+{% endschema %}

@@ -5,10 +5,14 @@
     },
     "call_to_action": {
       "type": "call-to-action"
+    },
+    "featured_collection": {
+      "type": "featured-collection"
     }
   },
   "order": [
     "hero",
-    "call_to_action"
+    "call_to_action",
+    "featured_collection"
   ]
 }
