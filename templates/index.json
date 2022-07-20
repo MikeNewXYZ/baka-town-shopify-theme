@@ -4,7 +4,23 @@
       "type": "hero"
     },
     "call_to_action": {
-      "type": "call-to-action"
+      "type": "call-to-action",
+      "blocks": {
+        "heading": {
+          "type": "heading"
+        },
+        "description": {
+          "type": "description"
+        },
+        "button": {
+          "type": "button"
+        }
+      },
+      "block_order": [
+        "heading",
+        "description",
+        "button"
+      ]
     },
     "featured_collection": {
       "type": "featured-collection"

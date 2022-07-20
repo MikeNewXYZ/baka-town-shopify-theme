@@ -8,24 +8,36 @@
       x-ref="details"
     >
       <div>
-        <h1 class="display-4">
-          {{ section.settings.heading_text }}
-        </h1>
-    
-        <div>
-          {{ section.settings.description }}
-        </div>
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'heading' %}
+              <h1 class="display-4">
+                {{ block.settings.heading_text }}
+              </h1>
+            {% when 'description' %}
+              <div>
+                {{ block.settings.description }}
+              </div>
+          {% endcase %}
+        {% endfor %}
       </div>
+
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'button' %}
+            <a
+              class="btn btn-dark btn-lg call-to-action__details-button"
+              href="{{ block.settings.button_url }}"
+              x-ref="button"
+              @mouseEnter="handleButtonMouseEnter"
+              @mouseLeave="handleButtonMouseLeave"
+            >
+              {{ block.settings.button_text }}
+            </a>
+        {% endcase %}
+      {% endfor %}
   
-      <a
-        class="btn btn-dark btn-lg call-to-action__details-button"
-        href="{{ section.settings.button_url }}"
-        x-ref="button"
-        @mouseEnter="handleButtonMouseEnter"
-        @mouseLeave="handleButtonMouseLeave"
-      >
-        {{ section.settings.button_text }}
-      </a>
+
     </div>
 
     <div
@@ -145,11 +157,12 @@ document.addEventListener("alpine:init", () => {
 
       anime({
         targets: this.$refs.gallery.children,
-        scale: [1, 0.95],
-        delay: anime.stagger(500),
+        scale: [1, anime.random(0.9, 0.95)],
+        delay: anime.stagger(250),
         easing: "easeInOutQuart",
         loop: true,
-        direction: "alternate"
+        direction: "alternate",
+        duration: 1000
       })
     },
     handleButtonMouseLeave() {
@@ -241,33 +254,6 @@ document.addEventListener("alpine:init", () => {
   "settings": [
     {
       "type": "header",
-      "content": "Info Options"
-    },
-    {
-      "type": "text",
-      "id": "heading_text",
-      "label": "Heading Text",
-      "default": "Wide Range of Products"
-    },
-    {
-      "type": "richtext",
-      "id": "description",
-      "label": "Description",
-      "default": "<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut sunt, atque in obcaecati quidem voluptates unde, debitis porro eius recusandae culpa explicabo dolorem cupiditate alias rem blanditiis voluptatem totam dolore. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia tempora commodi quibusdam vel natus tempore nobis perspiciatis repellat perferendis, autem dolores earum nesciunt. Repellendus blanditiis animi unde rerum voluptas itaque.</p>"
-    },
-    {
-      "type": "text",
-      "id": "button_text",
-      "label": "Button Text",
-      "default": "View Now"
-    },
-    {
-      "type": "url",
-      "id": "button_url",
-      "label": "Button URL"
-    },
-    {
-      "type": "header",
       "content": "Gallery Options"
     },
     {
@@ -291,9 +277,64 @@ document.addEventListener("alpine:init", () => {
       "label": "Image 4"
     }
   ],
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "name": "Heading",
+      "type": "heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading_text",
+          "label": "Heading Text",
+          "default": "Wide Range of Products"
+        }
+      ]
+    },
+    {
+      "name": "Description",
+      "type": "description",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut sunt, atque in obcaecati quidem voluptates unde, debitis porro eius recusandae culpa explicabo dolorem cupiditate alias rem blanditiis voluptatem totam dolore. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia tempora commodi quibusdam vel natus tempore nobis perspiciatis repellat perferendis, autem dolores earum nesciunt. Repellendus blanditiis animi unde rerum voluptas itaque.</p>"
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "type": "button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "View Now"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Call to Action"
+      "name": "Call to Action",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "description"
+        },
+        {
+          "type": "button"
+        }
+      ]
     }
   ]
 }
