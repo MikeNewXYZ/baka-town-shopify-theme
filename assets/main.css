@@ -1,3 +1,9 @@
+/* ANCHOR: Base Styles */
+html,
+body {
+  overflow-x: hidden;
+}
+
 /* ANCHOR: Shadows */
 .shadow {
   box-shadow: 0px 0.1px 2.2px rgba(0, 0, 0, 0.026),
