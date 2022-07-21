@@ -22,6 +22,9 @@
         "button"
       ]
     },
+    "product_showcase": {
+      "type": "product-showcase"
+    },
     "featured_collection": {
       "type": "featured-collection"
     }
@@ -29,6 +32,7 @@
   "order": [
     "hero",
     "call_to_action",
+    "product_showcase",
     "featured_collection"
   ]
 }

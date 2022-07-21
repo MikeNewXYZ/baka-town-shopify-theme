@@ -1,0 +1,165 @@
+<div
+  class="container product-showcase__wrapper"
+  x-data="productShowcase"
+>
+  <div class="product-showcase__details">
+    <h1
+      class="display-1"
+      x-ref="heading"
+      style="opacity: 0;"
+    >
+      {{ section.settings.product.title }}
+    </h1>
+
+    <div
+      class="display-1"
+      x-ref="price"
+      style="opacity: 0;"
+    >
+      <span class="text-primary text-bold fw-bold">
+        {{ section.settings.product.price | money_without_trailing_zeros }}
+      </span>
+
+      {% if section.settings.product.compare_at_price_max != 0 %}
+        <s class="text-danger">
+          {{ section.settings.product.compare_at_price_max | money_without_trailing_zeros }}
+        </s>
+      {% endif %}
+    </div>
+  </div>
+
+  <div
+    class="product-showcase__image-slide border-snake bg-light shadow"
+    x-ref="imageSlide"
+    style="opacity: 0;"
+  >
+    <a
+      class="product-showcase__image-wrapper bg-white border-snake__inner"
+      href="{{ section.settings.product.url }}"
+      x-ref="imageWrapper"
+      {% if section.settings.product.images.size > 1 %}
+        @mouseEnter="handleImageMouseEnter"
+        @mouseLeave="handleImageMouseLeave"
+      {% endif %}
+    >
+      {% for image in section.settings.product.images %}
+        <img
+          class="product-showcase__image"
+          src="{{ image | img_url: 'grande' }}"
+          style="z-index: {{ forloop.rindex }};"
+          draggable="false"
+        />
+      {% endfor %}
+
+      <img
+        class="product-showcase__image"
+        src="{{ section.settings.product.images[0] | img_url: 'grande' }}"
+        style="z-index: 0;"
+        draggable="false"
+      />
+    </a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("productShowcase", () => ({
+    waypoint: null,
+    init() {
+      this.waypoint = new Waypoint({
+        element: this.$el,
+        offset: "50%",
+        handler: this.introAnimation.bind(this)
+      })
+    },
+    introAnimation() {
+      this.waypoint.destroy()
+
+      const imagesToAnimate = [...this.$refs.imageWrapper.children].slice(0, -1)
+
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.heading,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        scale: [0.75, 1],
+        duration: 500
+      }).add({
+        targets: this.$refs.price,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        scale: [0.75, 1],
+        duration: 500
+      }).add({
+        targets: this.$refs.imageSlide,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        scale: [0.75, 1],
+        duration: 500 * imagesToAnimate.length
+      }, imagesToAnimate.length > 1 ? "-=500" : "-=0").add({
+        targets: imagesToAnimate.reverse(),
+        opacity: imagesToAnimate.length > 1 ? [0, 1] : 1,
+        filter: ["blur(5px)", "blur0px)"],
+        scale: imagesToAnimate.length > 1 ?  [1.1, 1] : 1,
+        delay: anime.stagger(250),
+        duration: 250,
+      }, `-=${(500 * imagesToAnimate.length) - 500}`)
+    },
+    handleImageMouseEnter() {
+      const imagesToAnimate = [...this.$refs.imageWrapper.children].slice(0, -1)
+
+      anime({
+        targets: imagesToAnimate,
+        opacity: [1, 0],
+        filter: ["blur(0px)", "blur(5px)"],
+        scale: [1, 1.1],
+        delay: anime.stagger(1000),
+        duration: 1000,
+        easing: "easeInOutQuart",
+        loop: true,
+      })
+    },
+    handleImageMouseLeave() {
+      const imagesToAnimate = [...this.$refs.imageWrapper.children].slice(0, -1)
+      
+      anime.remove(imagesToAnimate)
+
+      const hiddenImages = imagesToAnimate.filter((image) => {
+        return parseFloat(image.style.opacity) < 1
+      })
+
+      anime({
+        targets: hiddenImages.reverse(),
+        opacity: 1,
+        filter: "blur(0px)",
+        scale: 1,
+        delay: anime.stagger(500),
+        duration: 500,
+        easing: "easeInOutQuart",
+      })
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Product Showcase",
+  "tag": "section",
+  "settings": [
+    {
+    "type": "product",
+    "id": "product",
+    "label": "Product"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Showcase"
+    }
+  ]
+}
+{% endschema %}
