@@ -16,7 +16,13 @@ body {
 .content__wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 5rem;
+}
+
+@media all and (max-width: 50em) {
+  .content__wrapper {
+    gap: 2rem;
+  }
 }
 
 /* ANCHOR: Hero Section */
