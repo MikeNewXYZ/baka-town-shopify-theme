@@ -9,11 +9,14 @@
     {{ 'resetcss.css' | asset_url | stylesheet_tag }}
     {{ 'bootstrap.min.css' | asset_url | stylesheet_tag }}
     {{ 'main.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'bootstrap.min.js' | asset_url }}"></script>
     <script src="{{ 'anime.min.js' | asset_url }}"></script>
     <script src="{{ 'noframework.waypoints.js' | asset_url }}"></script>
     <script src="{{ 'alpinejs.min.js' | asset_url }}" defer></script>
   </head>
   <body>
+
+    {% section 'header' %}
 
     <main class="content__wrapper">
       {{ content_for_layout }}

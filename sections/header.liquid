@@ -1,0 +1,123 @@
+{%- comment -%}
+  TODO: Replace placeholder item count with dynamically updated one
+{%- endcomment -%}
+
+<nav
+  class="header__wrapper navbar navbar-expand-lg navbar-light bg-light shadow"
+  x-data="header"
+>
+  <div class="container-fluid">
+    <div class="d-flex">
+      <button
+        class="header__mobile-menu-button btn btn-icon btn-sm mb-1"
+        @click="openMobileMenu = true"
+      >
+        {% render 'icon',
+          type: 'list',
+          width: 28,
+          height: 28
+        %}
+      </button>
+
+      {% render 'header-mobile-menu' %}
+
+      <a class="navbar-brand" href="{{ routes.root_url }}">
+        {{ shop.name }}
+      </a>
+    </div>
+
+
+    <nav class="collapse navbar-collapse">
+      <ul class="navbar-nav">
+        {% for link in linklists.main-menu.links %}
+          {% if link.links == blank %}
+            <li class="nav-item">
+              <a
+                {% if link.active %}
+                  class="nav-link active"
+                {% else %}
+                  class="nav-link"
+                {% endif %}
+                href="{{ link.url }}"
+              >
+                {{ link.title }}
+              </a>
+            </li>
+          {% else %}
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                id="header-nav-{{ forloop.index }}"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {{ link.title }}
+              </a>
+
+              <ul
+                class="dropdown-menu header__dropdown-menu"
+                aria-labelledby="header-nav-{{ forloop.index }}"
+              >
+                {% for child_link in link.links %}
+                  <li>
+                    <a
+                      {% if child_link.active %}
+                        class="dropdown-item active"
+                      {% else %}
+                        class="dropdown-item"
+                      {% endif %}                    
+                      href="{{ child_link.url }}"
+                    >
+                      {{ child_link.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <a
+      class="header__cart btn btn-icon btn-sm position-relative"
+      href="{{ routes.cart_url }}"
+    >
+      <span class="header__cart-icon--closed">
+        {% render 'icon',
+          type: 'shopping-bag',
+          width: 28,
+          height: 28
+        %}
+      </span>
+
+      <span class="header__cart-icon--opened">
+        {% render 'icon',
+          type: 'shopping-bag-open',
+          width: 28,
+          height: 28
+        %}
+      </span>
+
+      <span class="header__cart-item-count translate-middle badge text-dark">
+        99+
+      </span>
+    </a>
+  </div>
+</nav>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("header", () => ({
+    openMobileMenu: false
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Header",
+  "tag": "header"
+}
+{% endschema %}

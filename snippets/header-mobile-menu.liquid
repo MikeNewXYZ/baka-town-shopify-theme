@@ -1,0 +1,82 @@
+<template x-teleport="body">
+  <aside
+    class="header-mobile-menu__wrapper"
+    x-cloak
+    x-show="openMobileMenu"
+    x-transition.opacity.right
+  >
+    <div
+      class="header-mobile-menu__overlay"
+      @click="openMobileMenu = false"
+    ></div>
+    
+    <div class="header-mobile-menu__sidebar-outer border-snake">
+      <div class="header-mobile-menu__sidebar-inner border-snake__inner bg-light shadow">
+        <button
+          class="header-mobile-menu__close-button btn-close btn-close-white"
+          @click="openMobileMenu = false"
+        ></button>
+
+        <div class="header-mobile-menu__sidebar-heading bg-primary text-light display-6">
+          Menu
+        </div>
+
+        <ul
+          class="nav nav-pills flex-column"
+          style="flex: 1; overflow-y: auto; flex-wrap: nowrap;"
+        >
+          {% for link in linklists.main-menu.links %}
+            {% if link.links == blank %}
+              <li class="nav-item">
+                <a
+                  {% if link.active %}
+                    class="nav-link active rounded-0"
+                  {% else %}
+                    class="nav-link rounded-0"
+                  {% endif %}
+                  href="{{ link.url }}"
+                >
+                  {{ link.title }}
+                </a>
+              </li>
+            {% else %}
+              <li
+                class="nav-item"
+                role="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
+                aria-controls="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
+              >
+                <a class="nav-link rounded-0 dropdown-toggle">
+                  {{ link.title }}
+                </a>
+                
+                <nav
+                  class="collapse"
+                  id="header-mobile-menu-nav-item-child-{{ forloop.index }}"
+                >
+                  <ul class="nav nav-pills flex-column ps-2">
+                    {% for child_link in link.links %}
+                      <li class="nav-item mb-2">
+                        <a
+                          {% if child_link.active %}
+                            class="nav-link active rounded-0 rounded-start"
+                          {% else %}
+                            class="nav-link rounded-0 rounded-start"
+                          {% endif %}
+                          href="{{ child_link.url }}"
+                        >
+                          - {{ child_link.title }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </nav>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </aside>
+</template>
