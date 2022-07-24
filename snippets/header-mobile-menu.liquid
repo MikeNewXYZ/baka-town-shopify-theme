@@ -42,12 +42,14 @@
             {% else %}
               <li
                 class="nav-item"
-                role="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
-                aria-controls="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
               >
-                <a class="nav-link rounded-0 dropdown-toggle">
+                <a
+                  class="nav-link rounded-0 dropdown-toggle"
+                  role="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
+                  aria-controls="#header-mobile-menu-nav-item-child-{{ forloop.index }}"
+                >
                   {{ link.title }}
                 </a>
                 
