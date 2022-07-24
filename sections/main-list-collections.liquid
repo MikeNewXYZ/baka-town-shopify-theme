@@ -1,0 +1,116 @@
+<div x-data="listCollections">
+  <section
+    class="py-5 bg-dark"
+    style="opacity: 0;"
+    x-ref="headingWrapper"
+  >
+    <h1
+      class="display-1 text-center text-light mb-1"
+      style="opacity: 0;"
+      x-ref="heading"
+    >
+      {{ section.settings.heading_text }}
+    </h1>
+  </section>
+  
+  {% paginate collections by section.settings.paginate %}
+    <section
+      class="list-collections__card-wrapper mt-5 container-md"
+      x-ref="cardWrapper"
+    >
+      {% for collection in collections %}
+        <a
+          class="list-collections__card rounded shadow"
+          style="text-decoration: none !important; opacity: 0;"
+          href="{{ collection.url }}"
+        >
+          <img
+            class="list-collections__card-image"
+            src="{{ collection.featured_image | img_url: 'grande' }}"
+          />
+  
+          <div class="text-light bg-dark text-center p-2 m-0 h4">
+            {{ collection.title }}
+          </div>
+        </a>
+      {% endfor %}
+    </section>
+  
+    <nav
+      class="container-md mt-5 d-flex justify-content-center"
+      x-ref="pagination"
+    >
+      {% render 'pagination',
+        paginate: paginate
+      %}
+    </nav>
+  {% endpaginate %}
+</div>
+
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("listCollections", () => ({
+    init() {
+      this.introAnimation()
+    },
+    introAnimation() {
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      const headingWrapperSize = this.$refs.headingWrapper.getBoundingClientRect()
+
+      tl.add({
+        targets: this.$refs.headingWrapper,
+        opacity: [0, 1],
+        filter: ["focus(5px)", "focus(0px)"],
+        translateY: [-headingWrapperSize.height, 0]
+      }).add({
+        targets: this.$refs.heading,
+        opacity: [0, 1],
+        filter: ["focus(5px)", "focus(0px)"]
+      }, "-=500").add({
+        targets: this.$refs.cardWrapper.children,
+        opacity: [0, 1],
+        filter: ["focus(5px)", "focus(0px)"],
+        scale: [0.5, 1],
+        delay: anime.stagger(100)
+      }, "-=500").add({
+        targets: this.$refs.pagination,
+        opacity: [0, 1],
+        filter: ["focus(5px)", "focus(0px)"]
+      }, "-=500")
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "List Collections",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "Collections"
+    },
+    {
+      "type": "range",
+      "id": "paginate",
+      "label": "Paginate",
+      "min": 1,
+      "max": 40,
+      "step": 1,
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "List Collections"
+    }
+  ]
+}
+{% endschema %}

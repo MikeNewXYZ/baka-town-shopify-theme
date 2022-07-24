@@ -1,0 +1,47 @@
+<ul class="pagination">
+  <li
+    {% if paginate.previous.is_link %}
+      class="page-item"
+    {% else %}
+      class="page-item disabled"
+    {% endif %}
+  >
+    <a
+      class="page-link"
+      href="{{ paginate.previous.url }}"
+    >
+      Previous
+    </a>
+  </li>
+
+  {% for part in paginate.parts %}
+    {% if part.is_link %}
+      <li class="page-item active">
+        <a class="page-link" href="{{ part.url }}">
+          {{ part.title }}
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item">
+        <a class="page-link">
+          {{ part.title }}
+        </a>
+      </li>
+    {% endif %}
+  {% endfor %}
+
+  <li
+    {% if paginate.next.is_link %}
+      class="page-item"
+    {% else %}
+      class="page-item disabled"
+    {% endif %}
+  >
+    <a
+      class="page-link"
+      href="{{ paginate.next.url }}"
+    >
+      Next
+    </a>
+  </li>
+</ul>
