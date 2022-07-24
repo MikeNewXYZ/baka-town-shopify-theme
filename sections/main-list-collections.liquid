@@ -23,6 +23,8 @@
           class="list-collections__card rounded shadow"
           style="text-decoration: none !important; opacity: 0;"
           href="{{ collection.url }}"
+          @mouseEnter="handleCardMouseEnter($el)"
+          @mouseLeave="handleCardMouseLeave($el)"
         >
           <img
             class="list-collections__card-image"
@@ -56,7 +58,7 @@ document.addEventListener("alpine:init", () => {
     },
     introAnimation() {
       const tl = anime.timeline({
-        easing: "easeInOutQuart"
+        easing: "easeInOutQuart",
       })
 
       const headingWrapperSize = this.$refs.headingWrapper.getBoundingClientRect()
@@ -81,6 +83,24 @@ document.addEventListener("alpine:init", () => {
         opacity: [0, 1],
         filter: ["focus(5px)", "focus(0px)"]
       }, "-=500")
+    },
+    handleCardMouseEnter(el) {
+      if (anime.get(el, "opacity") != 1) return
+
+      anime({
+        targets: el,
+        scale: 1.05,
+        duration: 750,
+        easing: "easeInOutQuart"
+      })
+    },
+    handleCardMouseLeave(el) {
+      anime({
+        targets: el,
+        scale: 1,
+        duration: 750,
+        easing: "easeInOutQuart"
+      })
     }
   }))
 })
