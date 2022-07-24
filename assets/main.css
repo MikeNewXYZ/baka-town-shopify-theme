@@ -2,6 +2,10 @@
 html,
 body {
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
 }
 
 [x-cloak] {
@@ -131,6 +135,20 @@ body {
 
 .header__cart:hover > .header__cart-icon--opened {
   display: block;
+}
+
+/* ANCHOR: Footer */
+.footer__wrapper {
+  margin-top: 2rem;
+  padding: 1rem 0;
+  padding-bottom: 0;
+}
+
+.footer__nav-wrapper {
+  display: flex;
+  gap: 4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0 !important;
 }
 
 /* ANCHOR: Hero Section */

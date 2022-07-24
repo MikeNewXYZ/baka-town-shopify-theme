@@ -1,0 +1,66 @@
+<nav class="footer__wrapper bg-light shadow">
+  <ul class="footer__nav-wrapper nav container-md pe-0">
+    {% for link in linklists.footer.links %}
+      <li class="nav-item">
+        <b>
+          {% if link.url != '#' %}
+            <a
+              {% if link.active %}
+                class="nav-link active"
+              {% else %}
+                class="nav-link"
+              {% endif %}
+
+              href="{{ link.url }}"
+            >
+              {{ link.title }}
+            </a>
+          {% else %}
+            <a class="nav-link">
+              {{ link.title }}
+            </a>
+          {% endif %}
+        </b>
+
+        {% if link.links != blank %}
+          <ul class="ps-3 nav flex-column">
+            {% for child_link in link.links %}
+              <li class="nav-item">
+                <a
+                  {% if child_link.active %}
+                    class="nav-link py-1 active"
+                  {% else %}
+                    class="nav-link py-1"
+                  {% endif %}
+      
+                  href="{{ child_link.url }}"
+                >
+                  {{ child_link.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="mt-4 bg-primary p-3">
+    <h4 class="h5 text-light mb-0 text-center">
+      {{ shop.name }}
+    </h4>
+  </div>
+</nav>
+
+{% schema %}
+{
+  "name": "Footer",
+  "tag": "footer",
+  "class": "mt-auto",
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ]
+}
+{% endschema %}
