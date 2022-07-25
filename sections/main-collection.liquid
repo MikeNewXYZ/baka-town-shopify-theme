@@ -1,0 +1,101 @@
+<div x-data="collection">
+  <section
+    class="bg-dark collection__heading-wrapper"
+    style="opacity: 0;"
+    x-ref="headingWrapper"
+  >
+    <img
+      class="collection__heading-image"
+      src="{{ collection.featured_image | img_url: 'master' }}"
+      x-ref="headingImage"
+    />
+
+    <div
+      class="collection__heading-overlay bg-dark"
+      x-ref="headingOverlay"
+    ></div>
+
+    <h1
+      class="collection__heading-text text-light text-center display-3 mb-0"
+      x-ref="headingText"
+    >
+      {{ collection.title }}
+    </h1>
+  </section>
+
+  {% paginate collection.products by 12 -%}
+    <section
+      class="collection__product-wrapper container-md mt-5"
+      x-ref="productWrapper"
+    >
+      {% for product in collection.products %}
+        {% render 'product-card',
+          product: product
+        %}
+      {% endfor %}
+    </section>
+
+    <nav
+      class="mt-4 d-flex justify-content-center"
+      x-ref="pagination"
+    >
+      {% render 'pagination',
+        paginate: paginate
+      %}
+    </nav>
+  {%- endpaginate %}
+</div>
+
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("collection", () => ({
+    init() {
+      this.introAnimation()
+    },
+    introAnimation() {
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.headingWrapper,
+        opacity: [0, 1],
+        translateY: ["-100%", "0%"]
+      }).add({
+        targets: this.$refs.headingImage,
+        translateY: ["100%", "0%"]
+      }, "-=600").add({
+        targets: this.$refs.headingOverlay,
+        opacity: [0, 0.25]
+      }, "-=500").add({
+        targets: this.$refs.headingText,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        translateY: [10, 0]
+      }, "-=750").add({
+        targets: this.$refs.productWrapper.children,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        translateY: [10, 0],
+        delay: anime.stagger(100)
+      }, "-=750").add({
+        targets: this.$refs.pagination,
+        opacity: [0, 1]
+      }, "-=600")
+    }
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Products",
+  "tag": "section",
+  "presets": [
+    {
+      "name": "Products"
+    }
+  ]
+}
+{% endschema %}

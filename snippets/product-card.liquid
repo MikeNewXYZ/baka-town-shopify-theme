@@ -1,0 +1,89 @@
+<div
+  class="product-card__wrapper card border-0 bg-light"
+  style="opacity: 0;"
+  x-data="productCard"
+>
+  <div
+    class="product-card__overlay"
+    style="transform: translateY(-100%)"
+    x-ref="overlay"
+  >
+    <img
+      class="product-card__image-overlay"
+      src="{{ product.featured_image | img_url: 'master' }}"
+      draggable="false"
+    />
+
+    <div
+      class="bg-dark"
+      style="opacity: 0.25;"
+    ></div>
+
+    <div
+      class="d-flex justify-content-center align-items-center"
+      style="z-index: 1;"
+    >
+      <h1
+        class="text-center display-6 text-light fw-bold"
+        x-ref="headingText"
+      >
+        <span class="d-inline-block">View</span>
+        <span class="d-inline-block">To</span>
+        <span class="d-inline-block">Click</span>
+      </h1>
+    </div>
+  </div>
+
+
+  <img
+    class="product-card__image card-img-top"
+    src="{{ product.featured_image | img_url: 'medium' }}"
+    draggable="false"
+  />
+  <div class="product-card__body card-body">
+    <h5 class="product-card__body-title card-title">
+      {{ product.title | truncate: 35, '...' }}
+    </h5>
+    <p class="product-card__body-text card-text">
+      {{ product.description | truncate: 110, '...' }}
+    </p>
+    <a
+      class="btn btn-primary"
+      href="{{ product.url }}"
+      @mouseEnter="handleMouseEnter"
+      @mouseLeave="handleMouseLeave"
+    >
+      View Product
+    </a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("productCard", () => ({
+    handleMouseEnter() {
+      const tl = anime.timeline({
+        easing: "easeInOutQuart"
+      })
+
+      tl.add({
+        targets: this.$refs.overlay,
+        translateY: "0%"
+      }).add({
+        targets: this.$refs.headingText.children,
+        translateY: [25, 0],
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        delay: anime.stagger(100)
+      }, "-=500")
+    },
+    handleMouseLeave() {
+      anime({
+        targets: this.$refs.overlay,
+        translateY: "-100%",
+        easing: "easeInOutQuart"
+      })
+    }
+  }))
+})
+</script>
