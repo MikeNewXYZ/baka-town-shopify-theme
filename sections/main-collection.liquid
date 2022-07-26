@@ -23,7 +23,7 @@
     </h1>
   </section>
 
-  {% paginate collection.products by 12 -%}
+  {% paginate collection.products by section.settings.pagination -%}
     <section
       class="collection__product-wrapper container-md mt-5"
       x-ref="productWrapper"
@@ -90,11 +90,22 @@ document.addEventListener("alpine:init", () => {
 
 {% schema %}
 {
-  "name": "Products",
+  "name": "Collection",
   "tag": "section",
+  "settings": [
+    {
+    "type": "range",
+    "id": "pagination",
+    "label": "Pagination",
+    "min": 1,
+    "max": 40,
+    "step": 1,
+    "default": 12
+    }
+  ],
   "presets": [
     {
-      "name": "Products"
+      "name": "Collection"
     }
   ]
 }
