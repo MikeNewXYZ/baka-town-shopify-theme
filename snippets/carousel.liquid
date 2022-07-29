@@ -1,0 +1,104 @@
+<div
+  id="carousel-{{ section.id }}"
+  class="carousel slide w-100 h-100"
+  style="cursor: zoom-in;"
+  data-bs-ride="carousel"
+  data-bs-interval="false"
+  x-data="{ 
+    openModal: false,
+    currentImage: `{{ product.images[0] | img_url: 'grande' }}`
+  }"
+>
+  {%- comment -%}
+    ANCHOR: Indicators
+  {%- endcomment -%}
+  {% if images.size > 1 %}
+    <div class="carousel-indicators">
+      {% for image in images %}
+        <button
+          {% if forloop.index0 == 0 %}
+            class="active"
+          {% endif %}
+          type="button"
+          data-bs-target="#carousel-{{ section.id }}"
+          data-bs-slide-to="{{ forloop.index0 }}"
+        ></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+
+  {%- comment -%}
+    ANCHOR: Images
+  {%- endcomment -%}
+  <div class="carousel-inner w-100 h-100">
+    {% for image in images %}
+    <div
+      {% if forloop.index0 == 0 %}
+        class="carousel-item w-100 h-100 active"
+      {% else %}
+        class="carousel-item w-100 h-100"
+      {% endif %}
+      @click="openModal = true; currentImage = `{{ image | img_url: 'grande' }}`"
+    >
+      <img
+        class="carousel__image"
+        src="{{ image | img_url: 'grande' }}"
+        draggable="false"
+      />
+    </div>
+    {% endfor %}
+  </div>
+
+  {%- comment -%}
+    ANCHOR: Control Buttons
+  {%- endcomment -%}
+  {% if images.size > 1 %}
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#carousel-{{ section.id }}"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#carousel-{{ section.id }}"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  {% endif %}
+
+  {%- comment -%}
+    ANCHOR: Modal
+  {%- endcomment -%}
+  <template x-teleport="body">
+    <aside
+      class="carousel__modal-wrapper py-5 px-1"
+      x-show="openModal"
+      x-transition.opacity.duration.500ms
+    >
+      <div
+        class="carousel__modal-inner-wrapper container-md rounded shadow p-2 bg-light h-100"
+        @click.outside="openModal = false"
+      >
+        <button
+          class="carousel__modal-close btn-close position-absolute"
+          type="button"
+          @click="openModal = false"
+        ></button>
+
+        <img
+          class="carousel__modal-image"
+          :src="currentImage"
+          draggable="false"
+        />
+      </div>
+    </aside>
+  </template>
+</div>

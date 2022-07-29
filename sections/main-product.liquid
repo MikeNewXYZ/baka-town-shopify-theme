@@ -1,0 +1,248 @@
+<div
+  class="container product__wrapper py-4"
+  x-data="product"
+>
+  {%- comment -%}
+    ANCHOR: Gallery 
+  {%- endcomment -%}
+  <div
+    class="product__gallery"
+    style="opacity: 0;"
+    x-data="{ currentImageIndex: 0 }"
+  >
+    <figure class="product__gallery-main-image-wrapper border-snake">
+      <img
+        class="product__gallery-main-image border-snake__inner"
+        :src="productData.images[currentImageIndex]"
+        draggable="false"
+      />
+    </figure>
+
+    {% if product.images.size > 2 %}
+      <figure class="product__gallery-image-picker">
+        {% for image in product.images %}
+          <img
+            class="rounded shadow-sm"
+            :class="currentImageIndex === {{ forloop.index0 }} && 'border border-primary border-4'"
+            src="{{ image | img_url: 'medium' }}"
+            draggable="false"
+            @click="currentImageIndex = {{ forloop.index0 }}"
+          />
+        {% endfor %}
+      </figure>
+    {% endif %}
+  </div>
+
+  {%- comment -%}
+    ANCHOR: Details
+  {%- endcomment -%}
+  <div
+    class="product__details-wrapper"
+    style="opacity: 0;"
+  >
+    {%- comment -%}
+      ANCHOR: Breadcrumbs
+    {%- endcomment -%}
+    <nav>
+      <ol class="product__details-breadcrumbs breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="{{ routes.root_url }}">Home</a>
+        </li>
+
+        {% if product.collections[0] %}
+          <li class="breadcrumb-item">
+            <a href="{{ product.collections[0].url }}">
+              {{ product.collections[0].title }}
+            </a>
+        </li>
+        {% endif %}
+
+        <li class="product__details-breadcrumbs-last-item breadcrumb-item active">
+          {{ product.title }}
+        </li>
+      </ol>
+    </nav>
+
+    {%- comment -%}
+      ANCHOR: Heading
+    {%- endcomment -%}
+    <h1 class="display-6 fw-bold">
+      {{ product.title }}
+    </h1>
+    
+    {%- comment -%}
+      ANCHOR: Price
+    {%- endcomment -%}
+    <h3 class="product__details-price fs-2 mb-0">
+      <span
+        class="product__details-price--current fw-bold text-primary"
+        x-text="Shopify.formatMoney(
+          currentVariant.price,
+          '{{ cart.currency.symbol }}'
+        )"
+      >
+      </span>
+      
+      <template x-if="currentVariant.compare_at_price">
+        <span
+          class="text-danger text-decoration-line-through"
+          x-text="Shopify.formatMoney(
+            currentVariant.compare_at_price,
+            '{{ cart.currency.symbol }}'
+          )"
+        >
+        </span>
+      </template>
+    </h3>
+
+    {%- comment -%}
+      ANCHOR: Divider
+    {%- endcomment -%}
+    <hr />
+
+    <div class="product__carousel-wrapper rounded">
+      {% render 'carousel',
+        images: product.images
+      %}
+    </div>
+
+    {%- comment -%}
+      ANCHOR: Divider
+    {%- endcomment -%}
+    <hr class="product__carousel-divider" />
+
+    {%- comment -%}
+      ANCHOR: Options
+    {%- endcomment -%}
+    {% unless product.has_only_default_variant %}
+      <form
+        class="product__details-options"
+        @change="setCurrentVariant($el)"
+      >
+        <h3 class="fs-2">
+          Options:
+        </h3>
+
+        {% for option in product.options_with_values %}
+          <div class="product__details-options-item">
+            <label
+              class="form-label"
+              for="option{{ forloop.index }}"
+            >
+              {{ option.name }}
+            </label>
+
+            <select
+              class="form-select"
+              id="option{{ forloop.index }}"
+              name="option{{ forloop.index }}"
+            >
+              {% for value in option.values %}
+                <option
+                  value="{{ value }}"
+                  {% if option.selected_value == value %}
+                    selected
+                  {% endif %}
+                >
+                  {{ value }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endfor %}
+      </form>
+    {% endunless %}
+
+    <div
+      {% if product.has_only_default_variant %}
+        class="product__details-controls flex-column"
+      {% else %}
+        class="product__details-controls mt-4"
+      {% endif %}
+    >
+      <div class="input-group">
+        <span class="input-group-text">
+          Quantity
+        </span>
+        <input
+          class="form-control form-control-lg"
+          type="number" 
+          id="product-quantity"
+          value="1"
+          min="1"
+          @change="(e) => quantity = e.target.value"
+        >
+      </div>
+
+      <button
+        class="btn btn-primary btn-lg"
+        @click="$store.cart.add([{ id: currentVariant.id, quantity: quantity }])"
+      >
+        Add to Cart
+      </button>
+    </div>
+
+    {%- comment -%}
+      ANCHOR: Divider
+    {%- endcomment -%}
+    <hr />
+
+    <div class="product__details-infomation-wrapper">
+      <h3 class="mb-3">
+        Product Information
+      </h3>
+
+      <p class="fs-5">
+        {{ product.description }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("product", () => ({
+    productData: {{ product | json }},
+    currentVariant: {{ product.selected_or_first_available_variant | json }},
+    quantity: 1,
+    init() {
+      this.introAnimation()
+    },
+    introAnimation() {
+      anime({
+        targets: this.$el.children,
+        opacity: [0, 1],
+        filter: ["blur(5px)", "blur(0px)"],
+        delay: anime.stagger(500),
+        easing: "easeInOutQuart"
+      })
+    },
+    setCurrentVariant(el) {
+      const rawFormData = new FormData(el)
+      const options = Object.fromEntries(rawFormData.entries())
+
+      this.productData.variants.forEach((variant) => {
+        if (
+          variant.option1 !== options.option1 ||
+          variant.option2 !== options.option2 ||
+          variant.option3 !== options.option3
+        ) return
+
+        this.currentVariant = variant
+      })
+    }
+  }))
+}) 
+</script>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "section",
+  "presets": [
+    {
+      "name": "Product"
+    }
+  ]
+}
+{% endschema %}
