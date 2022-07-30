@@ -41,7 +41,7 @@ document.addEventListener("alpine:init", () => {
           "Accept": "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ changes })
+        body: JSON.stringify({ ...changes })
       })
 
       this.getData()
