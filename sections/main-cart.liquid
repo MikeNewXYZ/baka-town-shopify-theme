@@ -1,0 +1,177 @@
+<div
+  class="container cart__wrapper pt-5 pb-2"
+  x-data="cart"
+>
+  <template x-if="$store.cart.data.item_count > 0">
+    <div>
+      {%- comment -%}
+        ANCHOR: Heading
+      {%- endcomment -%}
+      <h1 class="display-4 fw-bold text-center mb-lg-5">
+        Shopping Cart
+      </h1>
+
+      {%- comment -%}
+        ANCHOR: Items
+      {%- endcomment -%}
+      <div>
+        <div class="cart__items-layout d-none d-lg-grid">
+          <h6>Product</h6>
+
+          <h6>Quantity</h6>
+
+          <h6>Remove</h6>
+
+          <h6>Total</h6>
+        </div>
+
+        <hr />
+
+        <template x-for="(item, index) in $store.cart.data.items">
+          <div>
+            <div class="cart__item cart__items-layout">
+              <div
+                class="cart__item-product flex-column flex-lg-row"
+                style="grid-area: p;"
+              >
+                <img
+                  class="cart__item-product-image rounded"
+                  :src="item.image"
+                  draggable="false"
+                />
+
+                <div class="cart__item-info">
+                  <span
+                    class="cart__item-title"
+                    :class="item.product_has_only_default_variant ? 'overflow-visible text-wrap' : ''"
+                    x-text="item.title"
+                  >
+                  </span>
+
+                  <ul class="p-0 m-0" x-show="!item.product_has_only_default_variant">
+                    <template x-for="option in item.options_with_values">
+                      <li>
+                        <span
+                          class="fw-bold"
+                          x-text="option.name + ':'"
+                        >
+                        </span>
+                        <span x-text="option.value"></span>
+                      </li>
+                    </template>
+                  </ul>
+
+                  <a
+                    class="btn btn-link d-flex p-0"
+                    :href="item.url"
+                  >
+                    View Product
+                  </a>
+                </div>
+              </div>
+
+              <div style="grid-area: q;">
+                <div class="input-group flex-nowrap">
+                  <span class="input-group-text" id="addon-wrapping">
+                    Quantity
+                  </span>
+                  <input
+                    class="form-control"
+                    type="number"
+                    min="1"
+                    :value="item.quantity"
+                    @change="(e) => $store.cart.change({
+                      line: index + 1,
+                      quantity: e.target.value
+                    })"
+                  >
+                </div>
+              </div>
+
+              <div style="grid-area: r;">
+                <button
+                  class="btn btn-link text-danger fw-bold d-flex p-0 text-lg-end"
+                  @click="$store.cart.change({
+                    line: index + 1,
+                    quantity: 0
+                  })"
+                >
+                  Remove
+                </button>
+              </div>
+
+              <div
+                class="fs-4 fw-bold text-break text-lg-end"
+                style="grid-area: t;"
+                
+              >
+                <span class="d-inline d-lg-none">Total: </span>
+                <span
+                  x-text="Shopify.formatMoney(
+                    item.final_line_price,
+                    '{{ cart.currency.symbol }}'
+                  )"
+                ></span>
+              </div>
+            </div>
+        
+            <hr />
+          </div>
+        </template>
+      </div>
+      
+
+
+      {%- comment -%}
+        ANCHOR: Details
+      {%- endcomment -%}
+      <div class="d-flex flex-column gap-3 align-items-end">
+        <h1 class="text-end">
+          <span>Total: </span>
+          <span
+            x-text="Shopify.formatMoney(
+            $store.cart.data.total_price,
+              '{{ cart.currency.symbol }}'
+            )"
+          ></span>
+        </h1>
+        <a
+          class="btn btn-lg btn-primary"
+          href="/checkout"
+        >
+          Checkout
+        </a>
+      </div>
+    </div>
+  </template>
+
+  <template x-if="$store.cart.data.item_count === 0">
+    <div class="d-flex flex-column gap-2 text-center">
+      <h1 class="display-5 fw-bold">
+        There are no items in the cart
+      </h1>
+      
+      <a
+        class="fs-4"
+        href="{{ routes.collections_url }}"
+      >
+        Click here to view products
+      </a>
+    </div>
+  </template>
+</div>
+
+<script>
+document.addEventListener("alpine:init", () => {
+  Alpine.data("cart", () => ({
+    cartItems: {{ cart.items | json }}
+  }))
+})
+</script>
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": "section"
+}
+{% endschema %}
