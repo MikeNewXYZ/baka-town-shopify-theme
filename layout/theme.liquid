@@ -20,7 +20,13 @@
 
     {% section 'header' %}
 
-    <main class="content__wrapper">
+    <main
+      {% if template.name == 'index' %}
+        class="content__wrapper"
+      {% else %}
+        class="content__wrapper gap-0"
+      {% endif %}
+    >
       {{ content_for_layout }}
     </main>
 

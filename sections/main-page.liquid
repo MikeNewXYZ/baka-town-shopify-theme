@@ -1,0 +1,19 @@
+<div class="d-flex flex-column container-md">
+  <h1 class="display-4 text-center fw-bold">
+    {{ page.title }}
+  </h1>
+
+  <hr />
+
+  <div>
+    {{ page.content }}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Page",
+  "tag": "section",
+  "class": "pt-4 pb-2"
+}
+{% endschema %}

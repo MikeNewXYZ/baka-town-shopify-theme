@@ -1,0 +1,74 @@
+{% form 'contact',
+  class: 'container-md mx-auto',
+  style: 'max-width: 40rem;'
+%}
+  {% if form.posted_successfully? %}
+    <p class="text-success">
+      Thanks for contacting us! We'll get back to you as soon as possible.
+    </p>
+  {% endif %}
+
+  {% if form.errors %}
+    <ul class="text-danger p-0 m-0 mt-3">
+      {% for field in form.errors %}
+        {% if field == 'body' %}
+          <li>Your message cannot be blank.</li>
+        {% endif %}
+        {% if field == 'email' %}
+          <li>Please enter a valid email address.</li>
+        {% endif %}        
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <ul class="p-0 m-0 mt-3">
+    <li class="mb-3">
+      <label class="form-label" for="name">
+        Name
+      </label>
+      <input class="form-control" type="text" id="name" name="contact[name]" />
+    </li> 
+
+    <li
+      {% if form.errors contains 'email' %}
+        class="text-danger mb-3"
+      {% else %}
+        class="mb-3"
+      {% endif %}
+    >
+      <label class="form-label" for="email">
+        Email
+      </label>
+      <input class="form-control" type="email" id="email" name="contact[email]" />
+    </li>   
+
+    <li
+      {% if form.errors contains 'body' %}
+        class="text-danger mb-3"
+      {% else %}
+        class="mb-3"
+      {% endif %}
+    >
+      <label class="form-label" for="message">
+        Message
+      </label>
+      <textarea
+        class="form-control"
+        id="message"
+        name="contact[body]"
+      ></textarea>
+    </li>
+
+    <li class="mt-4">
+      <input class="btn btn-primary w-100" type="submit" value="Send" />
+    </li>
+  </ul>
+{% endform %}
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "tag": "section",
+  "class": "py-4 d-flex justify-content-center"
+}
+{% endschema %}
